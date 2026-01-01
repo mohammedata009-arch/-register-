@@ -7,19 +7,19 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
-        :root { --p: #4a90e2; --s: #2ecc71; --ai: #8e44ad; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; text-align: center; }
+        :root { --p: #1a73e8; --s: #34a853; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; text-align: center; color: #333; }
         .header { background: linear-gradient(135deg, var(--p), #2c3e50); color: white; padding: 25px; border-radius: 0 0 30px 30px; }
         .card { background: white; margin: 15px auto; width: 92%; max-width: 450px; padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; }
-        .quiz-opt { background: #f0f2f5; padding: 12px; margin: 5px 0; border-radius: 10px; cursor: pointer; border: 1px solid #ddd; transition: 0.3s; }
-        .quiz-opt:hover { background: #d1e3f8; }
-        .nav { position: fixed; bottom: 10px; width: 96%; left: 2%; background: white; display: flex; padding: 10px 0; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); z-index: 1000; }
-        .nav-item { flex: 1; cursor: pointer; color: #888; font-size: 10px; text-decoration: none; }
-        .nav-item.active { color: var(--p); font-weight: bold; }
-        .window { display: none; } .active-win { display: block; animation: fadeIn 0.4s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #studentProfile { display: none; background: #fff; border-top: 5px solid var(--s); text-align: right; animation: fadeIn 0.5s; }
+        .profile-item { border-bottom: 1px solid #f0f0f0; padding: 12px 0; display: flex; justify-content: space-between; align-items: center; }
+        .profile-item b { color: var(--p); font-size: 14px; }
+        .link-box { background: #e8f0fe; padding: 15px; border-radius: 12px; margin-top: 15px; border: 1px dashed var(--p); text-align: center; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; }
+        .nav { position: fixed; bottom: 10px; width: 96%; left: 2%; background: white; display: flex; padding: 10px 0; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .nav-item { flex: 1; cursor: pointer; color: #888; font-size: 10px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -29,121 +29,70 @@
     <p style="font-size: 12px; margin: 5px 0;">إدارة: محمد طه عطا المنان طه</p>
 </div>
 
-<div id="wReg" class="window active-win card">
-    <h3>📝 تسجيل في برنامج</h3>
-    <input type="text" id="rName" placeholder="الاسم الكامل">
-    <select id="rProg">
-        <option>الماجستير المصغر (سنة)</option>
-        <option>كورس مخاطبة للمبتدئين</option>
-        <option>نادي مخاطبة</option>
-        <option>الهندسة المدنية</option>
-    </select>
-    <select id="rMethod">
-        <option value="WA">تواصل عبر الواتساب</option>
-        <option value="EM">تواصل عبر الإيميل</option>
-    </select>
-    <input type="text" id="rContact" placeholder="رقم الهاتف أو الإيميل">
-    <button class="btn" style="background:var(--s)" onclick="submitReg()">إرسال الطلب</button>
-</div>
-
-<div id="wQuiz" class="window card">
-    <div id="quizMain">
-        <h3>📝 اختبارات تفاعلية</h3>
-        <div class="quiz-opt" onclick="loadQ('Civil')">🏗️ الهندسة المدنية</div>
-        <div class="quiz-opt" onclick="loadQ('Maliki')">📜 الفقه المالكي (المدونة/الموطأ)</div>
-        <div class="quiz-opt" onclick="loadQ('English')">🇬🇧 English Language</div>
+<div id="wLogin" class="card">
+    <div id="loginArea">
+        <h3>🔑 تسجيل دخول المتدرب</h3>
+        <input type="text" id="keyIn" placeholder="أدخل كود التفعيل الخاص بك">
+        <button class="btn" style="background:var(--p)" onclick="checkKey()">تفعيل العضوية</button>
     </div>
-    <div id="quizPlay" style="display:none;">
-        <h4 id="qTitle"></h4>
-        <p id="qText" style="font-weight:bold;"></p>
-        <div id="qOpts"></div>
-        <button class="btn" style="background:#888; margin-top:10px;" onclick="resetQuiz()">رجوع</button>
+
+    <div id="studentProfile">
+        <h4 style="text-align:center; color:var(--s); margin-top:0;">✅ بيانات العضوية النشطة</h4>
+        <div class="profile-item"><span>اسم المتدرب:</span> <b id="pName"></b></div>
+        <div class="profile-item"><span>رقم التفعيل:</span> <b id="pKey"></b></div>
+        <div class="profile-item"><span>البرنامج الدراسي:</span> <b id="pProg"></b></div>
+        <div class="profile-item"><span>مدة البرنامج:</span> <b id="pDur"></b></div>
+        <div class="profile-item"><span>تاريخ الاشتراك:</span> <b id="pDate"></b></div>
+        
+        <div class="link-box">
+            <p style="margin:0 0 10px; font-size:13px; color:#555;">🔗 رابط المحتوى التعليمي الخاص بك:</p>
+            <a id="pLink" href="#" target="_blank" style="color: var(--p); font-weight: bold; text-decoration: none; word-break: break-all;">جاري جلب الرابط...</a>
+        </div>
+        
+        <button class="btn" style="background:var(--s); margin-top:15px;" onclick="location.reload()">تسجيل خروج</button>
     </div>
-</div>
-
-<div id="wLogin" class="window card">
-    <h3>🔑 دخول المتدربين</h3>
-    <input type="text" id="keyIn" placeholder="أدخل كود التفعيل">
-    <button class="btn" style="background:var(--p)" onclick="login()">دخول للمواد</button>
-</div>
-
-<div class="nav">
-    <div class="nav-item active" onclick="tab('wReg',this)">📝<br>تسجيل</div>
-    <div class="nav-item" onclick="tab('wQuiz',this)">📝<br>Quizzes</div>
-    <div class="nav-item" onclick="tab('wLogin',this)">🔑<br>دخول</div>
 </div>
 
 <script>
-    // الإعدادات من صورك المرفقة
-    const firebaseConfig = {
-        databaseURL: "https://taha-academy-97d5e-default-rtdb.firebaseio.com/"
-    };
+    // إعدادات Firebase من مشروعك الحالي
+    const firebaseConfig = { databaseURL: "https://taha-academy-97d5e-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function tab(id, el) {
-        document.querySelectorAll('.window').forEach(w => w.classList.remove('active-win'));
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.getElementById(id).classList.add('active-win');
-        el.classList.add('active');
-    }
-
-    // نظام التسجيل
-    function submitReg() {
-        const name = document.getElementById('rName').value;
-        const prog = document.getElementById('rProg').value;
-        const method = document.getElementById('rMethod').value;
-        const contact = document.getElementById('rContact').value;
-        
-        const msg = `طلب تسجيل:\nالاسم: ${name}\nالبرنامج: ${prog}\nالوسيلة: ${method}\nالاتصال: ${contact}`;
-        
-        if(method === "WA") {
-            window.open(`https://wa.me/249999240574?text=${encodeURIComponent(msg)}`);
-        } else {
-            window.location.href = `mailto:mohammed@example.com?body=${encodeURIComponent(msg)}`;
-        }
-    }
-
-    // نظام الكويزات
-    const qa = {
-        'Civil': { q: "ما هي القوة التي يتحملها حديد التسليح أساساً؟", o: ["الضغط", "الشد", "القص"], c: 1 },
-        'Maliki': { q: "من مؤلف كتاب الموطأ؟", o: ["الإمام مالك", "ابن القاسم", "سحنون"], c: 0 },
-        'English': { q: "Select the correct verb: 'He ___ to school daily.'", o: ["go", "goes", "going"], c: 1 }
-    };
-
-    function loadQ(type) {
-        document.getElementById('quizMain').style.display = 'none';
-        document.getElementById('quizPlay').style.display = 'block';
-        const data = qa[type];
-        document.getElementById('qTitle').innerText = "اختبار " + type;
-        document.getElementById('qText').innerText = data.q;
-        const optsDiv = document.getElementById('qOpts');
-        optsDiv.innerHTML = "";
-        data.o.forEach((opt, i) => {
-            const d = document.createElement('div');
-            d.className = 'quiz-opt';
-            d.innerText = opt;
-            d.onclick = () => {
-                if(i === data.c) alert("إجابة صحيحة! 🎉");
-                else alert("إجابة خاطئة، حاول ثانية.");
-            };
-            optsDiv.appendChild(d);
-        });
-    }
-
-    function resetQuiz() {
-        document.getElementById('quizMain').style.display = 'block';
-        document.getElementById('quizPlay').style.display = 'none';
-    }
-
-    function login() {
+    function checkKey() {
         const key = document.getElementById('keyIn').value;
+        if(!key) return alert("يرجى إدخال الكود");
+
+        // البحث في السحابة دون مسح أي بيانات قديمة
         db.ref('users').orderByChild('key').equalTo(key).once('value', s => {
             if(s.exists()) {
                 let u; s.forEach(c => { u = c.val(); });
-                alert("مرحباً " + u.name);
-                if(u.link) window.location.href = u.link;
-            } else { alert("الكود غير مسجل سحابياً"); }
+                
+                // إظهار واجهة العضوية وإخفاء منطقة الدخول
+                document.getElementById('loginArea').style.display = 'none';
+                document.getElementById('studentProfile').style.display = 'block';
+                
+                // تعبئة المعلومات التفاعلية
+                document.getElementById('pName').innerText = u.name;
+                document.getElementById('pKey').innerText = u.key;
+                document.getElementById('pProg').innerText = u.type;
+                document.getElementById('pDate').innerText = u.date || "غير محدد";
+                
+                // تحديد المدة تلقائياً بناءً على طلبك
+                document.getElementById('pDur').innerText = (u.type.includes("ماجستير")) ? "سنة واحدة" : "شهر واحد";
+                
+                // عرض الرابط المرسل من الإدارة داخل الصفحة
+                const linkElem = document.getElementById('pLink');
+                if(u.link) {
+                    linkElem.href = u.link;
+                    linkElem.innerText = "اضغط هنا لفتح الحقيبة التدريبية";
+                } else {
+                    linkElem.innerText = "لم يتم إدراج رابط بعد، تواصل مع الإدارة";
+                    linkElem.style.color = "red";
+                }
+            } else { 
+                alert("❌ الكود غير موجود. تأكد من الكود أو تواصل مع الإدارة لتفعيل عضويتك."); 
+            }
         });
     }
 </script>
