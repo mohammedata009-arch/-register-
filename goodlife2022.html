@@ -2,100 +2,61 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>إدارة منصة البرامج التخصصية | محمد طه</title>
+    <title>لوحة التحكم | محمد طه</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
-        :root { --p: #2c3e50; --s: #27ae60; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; text-align: center; }
-        .admin-container { background: white; max-width: 700px; margin: auto; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        input, select { width: 95%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
-        .btn-add { background: var(--s); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
-        .user-item { background: #fff; border: 1px solid #eee; padding: 15px; margin-top: 10px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; text-align: right; }
-        .btn-del { background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; text-align: center; }
+        .admin-box { background: white; max-width: 600px; margin: auto; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        input, select, textarea { width: 95%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
+        .btn-add { background: #1a73e8; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .user-card { background: #fff; border: 1px solid #eee; padding: 15px; margin-top: 10px; border-radius: 10px; text-align: right; }
     </style>
 </head>
 <body>
 
-<div class="admin-container">
-    <h2>إدارة منصة البرامج التخصصية ☁️</h2>
-    <p>المسؤول: <b>محمد طه عطا المنان طه</b></p>
-
-    <div style="background: #f9f9f9; padding: 15px; border-radius: 10px;">
-        <h3>➕ إضافة متدرب جديد</h3>
-        <input type="text" id="stdName" placeholder="اسم المتدرب">
-        <input type="text" id="stdKey" placeholder="كود التفعيل (مثل: Tah101)">
-        <input type="text" id="stdLink" placeholder="رابط المواد (Google Drive / Telegram)">
-        <select id="stdType">
-            <option value="الماجستير المصغر (سنة)">الماجستير المصغر (سنة)</option>
-            <option value="إصلاح الدراجات الكهربائية (شهر)">إصلاح الدراجات الكهربائية (شهر)</option>
-            <option value="كورس مخاطبة للمبتدئين (شهر)">كورس مخاطبة للمبتدئين (شهر)</option>
-            <option value="الهندسة المدنية (شهر)">الهندسة المدنية (شهر)</option>
-        </select>
-        <button class="btn-add" onclick="addUser()">تفعيل وإرسال للسحابة</button>
-    </div>
-
-    <div id="displayUsers" style="margin-top: 30px;">جاري تحميل المتدربين...</div>
+<div class="admin-box">
+    <h2>إدارة المتدربين والرسائل</h2>
+    <input type="text" id="sName" placeholder="اسم المتدرب">
+    <input type="text" id="sKey" placeholder="الكود (مثلاً: Tah101)">
+    <input type="text" id="sLink" placeholder="رابط المواد">
+    <select id="sType">
+        <option>الماجستير المصغر (سنة)</option>
+        <option>إصلاح الدراجات الكهربائية</option>
+        <option>كورس مخاطبة للمبتدئين</option>
+    </select>
+    <textarea id="sNote" placeholder="اكتب إشعاراً للطالب هنا..."></textarea>
+    <button class="btn-add" onclick="save()">حفظ في السحابة</button>
+    <div id="list"></div>
 </div>
 
 <script>
-    // إعدادات Firebase الخاصة بمشروعك
     const firebaseConfig = { databaseURL: "https://taha-academy-97d5e-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // إضافة متدرب مع الحفاظ على التنسيق المطلوب لصفحة المتدرب
-    function addUser() {
-        const name = document.getElementById('stdName').value;
-        const key = document.getElementById('stdKey').value;
-        const link = document.getElementById('stdLink').value;
-        const type = document.getElementById('stdType').value;
-        const date = new Date().toLocaleDateString('ar-EG');
-
-        if(name && key) {
-            db.ref('users').push({
-                name: name,
-                key: key,
-                link: link,
-                type: type,
-                date: date
-            }).then(() => {
-                alert("تم التفعيل! ستظهر البيانات فوراً في صفحة المتدرب.");
-                document.getElementById('stdName').value = "";
-                document.getElementById('stdKey').value = "";
-                document.getElementById('stdLink').value = "";
-            });
-        } else {
-            alert("يرجى ملء الاسم والكود.");
+    function save() {
+        const data = {
+            name: document.getElementById('sName').value,
+            key: document.getElementById('sKey').value,
+            link: document.getElementById('sLink').value,
+            type: document.getElementById('sType').value,
+            note: document.getElementById('sNote').value || "لا توجد إشعارات",
+            date: new Date().toLocaleDateString('ar-EG')
+        };
+        if(data.name && data.key) {
+            db.ref('users').push(data).then(() => { alert("تم الحفظ!"); location.reload(); });
         }
     }
 
-    // عرض القائمة الحالية (بما في ذلك العضويات القديمة)
-    db.ref('users').on('value', (s) => {
-        const display = document.getElementById('displayUsers');
-        display.innerHTML = "<h3>👥 المتدربون النشطون:</h3>";
-        if (s.exists()) {
-            s.forEach((child) => {
-                const u = child.val();
-                display.innerHTML += `
-                    <div class="user-item">
-                        <div>
-                            <b>${u.name}</b> <br>
-                            <small>كود: ${u.key} | برنامج: ${u.type}</small>
-                        </div>
-                        <button class="btn-del" onclick="deleteUser('${child.key}')">حذف</button>
-                    </div>`;
-            });
-        } else {
-            display.innerHTML += "<p>لا يوجد متدربون حالياً.</p>";
-        }
+    db.ref('users').on('value', s => {
+        const list = document.getElementById('list');
+        list.innerHTML = "<h3>المتدربون:</h3>";
+        s.forEach(c => {
+            const u = c.val();
+            list.innerHTML += `<div class="user-card"><b>${u.name}</b> (الكود: ${u.key})<br><small>🔔 الإشعار: ${u.note}</small></div>`;
+        });
     });
-
-    function deleteUser(id) {
-        if(confirm("هل تريد إلغاء تفعيل هذا المتدرب؟")) {
-            db.ref('users').child(id).remove();
-        }
-    }
 </script>
 </body>
 </html>
