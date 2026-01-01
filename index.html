@@ -8,16 +8,15 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
         :root { --p: #4a90e2; --s: #2ecc71; --ai: #8e44ad; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; text-align: center; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; text-align: center; }
         .header { background: linear-gradient(135deg, var(--p), #2c3e50); color: white; padding: 25px; border-radius: 0 0 30px 30px; }
         .card { background: white; margin: 15px auto; width: 92%; max-width: 450px; padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-        .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .quiz-option { background: #f0f2f5; padding: 12px; margin: 5px 0; border-radius: 10px; cursor: pointer; border: 1px solid #ddd; }
-        .quiz-option:hover { background: #e0e0e0; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; font-family: inherit; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; }
         .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; }
+        .quiz-opt { background: #f0f2f5; padding: 12px; margin: 5px 0; border-radius: 10px; cursor: pointer; border: 1px solid #ddd; transition: 0.3s; }
+        .quiz-opt:hover { background: #d1e3f8; }
         .nav { position: fixed; bottom: 10px; width: 96%; left: 2%; background: white; display: flex; padding: 10px 0; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); z-index: 1000; }
-        .nav-item { flex: 1; cursor: pointer; color: #888; font-size: 10px; }
+        .nav-item { flex: 1; cursor: pointer; color: #888; font-size: 10px; text-decoration: none; }
         .nav-item.active { color: var(--p); font-weight: bold; }
         .window { display: none; } .active-win { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -30,57 +29,52 @@
     <p style="font-size: 12px; margin: 5px 0;">إدارة: محمد طه عطا المنان طه</p>
 </div>
 
-<div id="wRegister" class="window active-win card">
-    <h3>📝 طلب اشتراك في برنامج</h3>
-    <input type="text" id="regName" placeholder="الاسم الكامل">
-    <select id="regProgram">
-        <option value="الماجستير المصغر">الماجستير المصغر (سنة)</option>
-        <option value="كورس مخاطبة مبتدئين">كورس مخاطبة للمبتدئين</option>
-        <option value="نادي مخاطبة">نادي مخاطبة</option>
-        <option value="الهندسة المدنية">دورة الهندسة المدنية</option>
+<div id="wReg" class="window active-win card">
+    <h3>📝 تسجيل في برنامج</h3>
+    <input type="text" id="rName" placeholder="الاسم الكامل">
+    <select id="rProg">
+        <option>الماجستير المصغر (سنة)</option>
+        <option>كورس مخاطبة للمبتدئين</option>
+        <option>نادي مخاطبة</option>
+        <option>الهندسة المدنية</option>
     </select>
-    <select id="regMethod">
-        <option value="WhatsApp">تفعيل عبر الواتساب</option>
-        <option value="Email">تفعيل عبر الإيميل</option>
+    <select id="rMethod">
+        <option value="WA">تواصل عبر الواتساب</option>
+        <option value="EM">تواصل عبر الإيميل</option>
     </select>
-    <input type="text" id="regContact" placeholder="رقم الهاتف أو الإيميل">
-    <button class="btn" style="background:var(--s)" onclick="submitRegistration()">إرسال الطلب</button>
+    <input type="text" id="rContact" placeholder="رقم الهاتف أو الإيميل">
+    <button class="btn" style="background:var(--s)" onclick="submitReg()">إرسال الطلب</button>
 </div>
 
 <div id="wQuiz" class="window card">
     <div id="quizMain">
-        <h3>📝 الاختبارات التفاعلية</h3>
-        <div class="quiz-grid">
-            <button class="quiz-option" onclick="loadQuiz('Civil')">🏗️ هندسة مدنية</button>
-            <button class="quiz-option" onclick="loadQuiz('Maliki')">📜 فقه مالكي</button>
-            <button class="quiz-option" onclick="loadQuiz('English')">🇬🇧 English</button>
-            <button class="quiz-option" onclick="loadQuiz('Arabic')">🇸🇩 لغة عربية</button>
-        </div>
+        <h3>📝 اختبارات تفاعلية</h3>
+        <div class="quiz-opt" onclick="loadQ('Civil')">🏗️ الهندسة المدنية</div>
+        <div class="quiz-opt" onclick="loadQ('Maliki')">📜 الفقه المالكي (المدونة/الموطأ)</div>
+        <div class="quiz-opt" onclick="loadQ('English')">🇬🇧 English Language</div>
     </div>
-    <div id="quizContainer" style="display:none;">
-        <h4 id="quizTitle"></h4>
-        <p id="quizQuestion"></p>
-        <div id="quizOptions"></div>
-        <button class="btn" style="background:#888; margin-top:10px;" onclick="backToQuizzes()">رجوع</button>
+    <div id="quizPlay" style="display:none;">
+        <h4 id="qTitle"></h4>
+        <p id="qText" style="font-weight:bold;"></p>
+        <div id="qOpts"></div>
+        <button class="btn" style="background:#888; margin-top:10px;" onclick="resetQuiz()">رجوع</button>
     </div>
 </div>
 
-<div id="wAI" class="window card">
-    <h3>🤖 المستشار الذكي (AI)</h3>
-    <textarea id="aiQuery" rows="3" placeholder="اسأل أي سؤال..."></textarea>
-    <button class="btn" style="background:var(--ai)" onclick="askAI()">إرسال</button>
-    <div id="aiRes" style="margin-top:10px;"></div>
+<div id="wLogin" class="window card">
+    <h3>🔑 دخول المتدربين</h3>
+    <input type="text" id="keyIn" placeholder="أدخل كود التفعيل">
+    <button class="btn" style="background:var(--p)" onclick="login()">دخول للمواد</button>
 </div>
 
 <div class="nav">
-    <div class="nav-item active" onclick="tab('wRegister',this)">📝<br>تسجيل</div>
+    <div class="nav-item active" onclick="tab('wReg',this)">📝<br>تسجيل</div>
     <div class="nav-item" onclick="tab('wQuiz',this)">📝<br>Quizzes</div>
-    <div class="nav-item" onclick="tab('wAI',this)">🤖<br>اسأل AI</div>
     <div class="nav-item" onclick="tab('wLogin',this)">🔑<br>دخول</div>
 </div>
 
 <script>
-    // Firebase Setup
+    // الإعدادات من صورك المرفقة
     const firebaseConfig = {
         databaseURL: "https://taha-academy-97d5e-default-rtdb.firebaseio.com/"
     };
@@ -95,60 +89,62 @@
     }
 
     // نظام التسجيل
-    function submitRegistration() {
-        const name = document.getElementById('regName').value;
-        const prog = document.getElementById('regProgram').value;
-        const method = document.getElementById('regMethod').value;
-        const contact = document.getElementById('regContact').value;
-
-        if(!name || !contact) return alert("يرجى ملء كافة الحقول");
-
-        const message = `طلب اشتراك جديد:\nالاسم: ${name}\nالبرنامج: ${prog}\nوسيلة التواصل: ${method}\nالمعرف: ${contact}`;
+    function submitReg() {
+        const name = document.getElementById('rName').value;
+        const prog = document.getElementById('rProg').value;
+        const method = document.getElementById('rMethod').value;
+        const contact = document.getElementById('rContact').value;
         
-        if(method === "WhatsApp") {
-            window.open(`https://wa.me/249999240574?text=${encodeURIComponent(message)}`);
+        const msg = `طلب تسجيل:\nالاسم: ${name}\nالبرنامج: ${prog}\nالوسيلة: ${method}\nالاتصال: ${contact}`;
+        
+        if(method === "WA") {
+            window.open(`https://wa.me/249999240574?text=${encodeURIComponent(msg)}`);
         } else {
-            window.location.href = `mailto:taha@example.com?subject=Registration&body=${encodeURIComponent(message)}`;
+            window.location.href = `mailto:mohammed@example.com?body=${encodeURIComponent(msg)}`;
         }
     }
 
-    // نظام الكويزات الفعال
-    const quizData = {
-        'Civil': { q: "ما هي المادة الأساسية لمقاومة الشد في الخرسانة؟", a: ["الرمل", "حديد التسليح", "الحصى"], correct: 1 },
-        'Maliki': { q: "من أشهر كتب المذهب المالكي التي جمعت الفقه والأثر؟", a: ["الموطأ", "الأم", "المغني"], correct: 0 },
-        'English': { q: "Which word is a verb?", a: ["Apple", "Running", "Blue"], correct: 1 },
-        'Arabic': { q: "ما هو الفاعل في جملة 'كتب محمدُ الدرس'؟", a: ["كتب", "محمد", "الدرس"], correct: 1 }
+    // نظام الكويزات
+    const qa = {
+        'Civil': { q: "ما هي القوة التي يتحملها حديد التسليح أساساً؟", o: ["الضغط", "الشد", "القص"], c: 1 },
+        'Maliki': { q: "من مؤلف كتاب الموطأ؟", o: ["الإمام مالك", "ابن القاسم", "سحنون"], c: 0 },
+        'English': { q: "Select the correct verb: 'He ___ to school daily.'", o: ["go", "goes", "going"], c: 1 }
     };
 
-    function loadQuiz(type) {
+    function loadQ(type) {
         document.getElementById('quizMain').style.display = 'none';
-        const container = document.getElementById('quizContainer');
-        container.style.display = 'block';
-        const data = quizData[type];
-        document.getElementById('quizTitle').innerText = "اختبار " + type;
-        document.getElementById('quizQuestion').innerText = data.q;
-        const optionsDiv = document.getElementById('quizOptions');
-        optionsDiv.innerHTML = "";
-        data.a.forEach((opt, index) => {
-            const btn = document.createElement('div');
-            btn.className = 'quiz-option';
-            btn.innerText = opt;
-            btn.onclick = () => {
-                if(index === data.correct) alert("إجابة صحيحة! 🎉");
-                else alert("إجابة خاطئة، حاول مرة أخرى.");
+        document.getElementById('quizPlay').style.display = 'block';
+        const data = qa[type];
+        document.getElementById('qTitle').innerText = "اختبار " + type;
+        document.getElementById('qText').innerText = data.q;
+        const optsDiv = document.getElementById('qOpts');
+        optsDiv.innerHTML = "";
+        data.o.forEach((opt, i) => {
+            const d = document.createElement('div');
+            d.className = 'quiz-opt';
+            d.innerText = opt;
+            d.onclick = () => {
+                if(i === data.c) alert("إجابة صحيحة! 🎉");
+                else alert("إجابة خاطئة، حاول ثانية.");
             };
-            optionsDiv.appendChild(btn);
+            optsDiv.appendChild(d);
         });
     }
 
-    function backToQuizzes() {
+    function resetQuiz() {
         document.getElementById('quizMain').style.display = 'block';
-        document.getElementById('quizContainer').style.display = 'none';
+        document.getElementById('quizPlay').style.display = 'none';
     }
 
-    function askAI() {
-        const q = document.getElementById('aiQuery').value;
-        if(q) document.getElementById('aiRes').innerText = "🤖 جاري معالجة سؤالك حول: " + q;
+    function login() {
+        const key = document.getElementById('keyIn').value;
+        db.ref('users').orderByChild('key').equalTo(key).once('value', s => {
+            if(s.exists()) {
+                let u; s.forEach(c => { u = c.val(); });
+                alert("مرحباً " + u.name);
+                if(u.link) window.location.href = u.link;
+            } else { alert("الكود غير مسجل سحابياً"); }
+        });
     }
 </script>
 </body>
