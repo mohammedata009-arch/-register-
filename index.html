@@ -3,79 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أكاديمية محمد طه التعليمية | أونلاين</title>
+    <title>منصة البرامج التخصصية | إدارة محمد طه</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
-        :root { --p: #4a90e2; --s: #2ecc71; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; text-align: center; }
-        .header { background: linear-gradient(135deg, var(--p), #2c3e50); color: white; padding: 30px; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .tag { background: var(--s); color: white; padding: 4px 12px; border-radius: 15px; font-size: 11px; font-weight: bold; }
-        .card { background: white; margin: 20px auto; width: 90%; max-width: 420px; padding: 25px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-        .info-box { font-size: 13px; color: #444; background: #fff9db; padding: 12px; border-radius: 12px; margin-bottom: 15px; border-right: 5px solid #f1c40f; text-align: right; }
-        input, select { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        .btn-main { background: var(--p); } .btn-cert { background: #f39c12; }
-        .nav { position: fixed; bottom: 15px; width: 90%; left: 5%; background: white; display: flex; padding: 12px 0; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .nav-item { flex: 1; cursor: pointer; color: #888; font-size: 11px; }
+        :root { --p: #4a90e2; --s: #2ecc71; --ai: #8e44ad; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; text-align: center; }
+        .header { background: linear-gradient(135deg, var(--p), #2c3e50); color: white; padding: 25px; border-radius: 0 0 30px 30px; }
+        .card { background: white; margin: 15px auto; width: 92%; max-width: 450px; padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .quiz-btn { background: #fff; border: 2px solid var(--p); padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.3s; }
+        .quiz-btn:hover { background: var(--p); color: white; }
+        .ai-box { background: #f3e5f5; border: 1px solid var(--ai); padding: 15px; border-radius: 15px; margin-top: 10px; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; }
+        .btn-ai { background: var(--ai); }
+        .nav { position: fixed; bottom: 10px; width: 96%; left: 2%; background: white; display: flex; padding: 10px 0; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); z-index: 1000; overflow-x: auto; }
+        .nav-item { min-width: 70px; flex: 1; cursor: pointer; color: #888; font-size: 10px; }
         .nav-item.active { color: var(--p); font-weight: bold; }
         .window { display: none; } .active-win { display: block; animation: fadeIn 0.4s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .small-note { font-size: 11px; color: #7f8c8d; margin-top: 5px; display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <span class="tag">منصة تعليمية أونلاين 🌐</span>
-    <h2 style="margin: 10px 0 5px;">أكاديمية محمد طه</h2>
-    <p style="font-size: 12px; opacity: 0.9;">البرامج التخصصية والماجستير المصغر</p>
+    <h2 style="margin: 0;">منصة البرامج التخصصية</h2>
+    <p style="font-size: 12px; margin: 5px 0;">إدارة: محمد طه عطا المنان طه</p>
 </div>
 
-<div id="w1" class="window active-win card">
-    <h3>🔑 بوابة المتدربين</h3>
-    <div class="info-box">أدخل الكود لمتابعة تقدمك والوصول للمواد التعليمية.</div>
-    <input type="text" id="keyInput" placeholder="أدخل كود التفعيل">
-    <button class="btn btn-main" onclick="checkKey()">دخول للمواد التعليمية</button>
+<div id="wAI" class="window card">
+    <h3>🤖 المستشار الذكي (AI)</h3>
+    <div class="ai-box">اسألني أي سؤال في العلوم أو اللغات أو الهندسة وسأجيبك فوراً!</div>
+    <textarea id="aiQuery" rows="3" placeholder="اكتب سؤالك هنا..."></textarea>
+    <button class="btn btn-ai" onclick="askAI()">إرسال للسحابة الذكية</button>
+    <div id="aiRes" style="margin-top:15px; font-size:13px; color:#2c3e50; font-weight:bold;"></div>
 </div>
 
-<div id="w2" class="window card">
-    <h3>🎓 طلب شهادة تخرج</h3>
-    <div class="info-box">يجب إرفاق صورة البطاقة الشخصية (الوجهين) عند الإرسال.</div>
-    <input type="text" id="cNameAr" placeholder="الاسم الكامل (عربي)">
-    <input type="text" id="cNameEn" placeholder="Full Name (English)">
-    <select id="cCourse">
-        <option>الماجستير المصغر (أونلاين - سنة)</option>
-        <option>كورس مخاطبة للمبتدئين (شهر)</option>
-        <option>نادي مخاطبة (مستوى متقدم)</option>
-        <option>التصميم الإنشائي</option>
-    </select>
-    <button class="btn btn-cert" onclick="sendCert()">إرسال الطلب (واتساب)</button>
-</div>
-
-<div id="w3" class="window card">
-    <h3>📝 تسجيل البرامج أونلاين</h3>
-    <div class="info-box">
-        بنك الخرطوم: 2473368 <br>
-        <span style="color:#2c5282; font-weight:bold;">محمد طه عطا المنان طه</span>
-        <span class="small-note">مسؤولون فقط عن التحويل في رقم الحساب أعلاه</span>
+<div id="wQuiz" class="window card">
+    <h3>📝 الاختبارات التفاعلية (Quiz)</h3>
+    <p style="font-size:12px; color:#666;">اختر مجالك واختبر معلوماتك</p>
+    <div class="quiz-grid">
+        <div class="quiz-btn" onclick="startQuiz('English')">🇬🇧 English Quiz</div>
+        <div class="quiz-btn" onclick="startQuiz('Arabic')">🇸🇩 اللغة العربية</div>
+        <div class="quiz-btn" onclick="startQuiz('Civil')">🏗️ الهندسة المدنية</div>
+        <div class="quiz-btn" onclick="startQuiz('Maliki')">📜 الفقه المالكي</div>
     </div>
-    <input type="text" id="rName" placeholder="الاسم الرباعي">
-    <select id="rCourse">
-        <option>كورس مخاطبة للمبتدئين (أونلاين - شهر)</option>
-        <option>نادي مخاطبة (أونلاين - شهر)</option>
-        <option>الماجستير المصغر (أونلاين - سنة)</option>
-    </select>
-    <button class="btn btn-main" onclick="sendReg()">استفسار وتسجيل</button>
+</div>
+
+<div id="w0" class="window active-win card">
+    <h3>🔍 مَنْ نحن؟</h3>
+    <p style="font-size:14px; color:#555; text-align:justify;">نحن منصة تهتم بالعلوم واللغات، نقدم شهادات تدريبية معتمدة لتأهيل الطلاب والمهنيين لسوق العمل بأحدث المعايير.</p>
+</div>
+
+<div id="w1" class="window card">
+    <h3>🔑 دخول المتدربين</h3>
+    <input type="text" id="keyInput" placeholder="أدخل كود التفعيل">
+    <button class="btn" style="background:var(--p)" onclick="checkKey()">دخول المواد</button>
 </div>
 
 <div class="nav">
-    <div class="nav-item active" onclick="tab(1,this)">🔑<br>دخول</div>
-    <div class="nav-item" onclick="tab(2,this)">🎓<br>شهادات</div>
-    <div class="nav-item" onclick="tab(3,this)">📝<br>برامجنا</div>
+    <div class="nav-item active" onclick="tab('w0',this)">🔍<br>عنّا</div>
+    <div class="nav-item" onclick="tab('wAI',this)">🤖<br>اسأل AI</div>
+    <div class="nav-item" onclick="tab('wQuiz',this)">📝<br>Quizzes</div>
+    <div class="nav-item" onclick="tab('w1',this)">🔑<br>دخول</div>
+    <div class="nav-item" onclick="window.open('https://wa.me/249999240574')">📝<br>تسجيل</div>
 </div>
 
 <script>
+    // Firebase Config (نفس بياناتك السابقة)
     const firebaseConfig = {
         apiKey: "AIzaSyA2k8py0QUZiQQz2uS0vzfAW-wHiu2FaQE",
         authDomain: "taha-academy-97d5e.firebaseapp.com",
@@ -86,40 +82,43 @@
         appId: "1:1008678916160:web:b0f7d4ad0931fbf0990fa5"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
 
-    function tab(n, el) {
+    function tab(id, el) {
         document.querySelectorAll('.window').forEach(w => w.classList.remove('active-win'));
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.getElementById('w'+n).classList.add('active-win');
+        document.getElementById(id).classList.add('active-win');
         el.classList.add('active');
+    }
+
+    // محاكاة الذكاء الاصطناعي (يمكن ربطه بـ OpenAI لاحقاً)
+    function askAI() {
+        const q = document.getElementById('aiQuery').value;
+        const res = document.getElementById('aiRes');
+        if(!q) return;
+        res.innerHTML = "⏳ جاري التفكير في الإجابة...";
+        setTimeout(() => {
+            res.innerHTML = "🤖 إجابة تجريبية: سؤالك حول '" + q + "' تم استلامه. لربط الإجابات الحية بذكاء Gemini، يرجى تفعيل مفتاح API.";
+        }, 2000);
+    }
+
+    // نظام الكويزات
+    function startQuiz(type) {
+        let q = "";
+        if(type === 'Maliki') q = "سؤال في الفقه المالكي: ما هي أمهات الكتب في المذهب؟\n1. الموطأ\n2. المدونة\n(قريباً سيتم إضافة الاختبارات الكاملة)";
+        else if(type === 'Civil') q = "سؤال هندسي: ما هي وظيفة القواعد الخرسانية؟";
+        else q = "Starting " + type + " Quiz...";
+        alert(q);
     }
 
     function checkKey() {
         const key = document.getElementById('keyInput').value;
-        db.ref('users').orderByChild('key').equalTo(key).once('value', s => {
+        firebase.database().ref('users').orderByChild('key').equalTo(key).once('value', s => {
             if(s.exists()) {
-                let u; s.forEach(c => { u = c.val(); });
-                alert(`أهلاً بك يا ${u.name}\nالكورس: ${u.type}\nتاريخ البدء: ${u.date}\nسيتم توجيهك لموادك الدراسية.`);
+                let u; s.forEach(c => {u = c.val()});
+                alert("مرحباً " + u.name);
                 if(u.link) window.location.href = u.link;
-                else alert("يرجى التواصل مع الإدارة لربط روابط المواد بحسابك.");
-            } else { alert("عذراً، الكود غير صحيح أو انتهى اشتراكه."); }
+            } else { alert("كود غير صحيح"); }
         });
-    }
-
-    function sendCert() {
-        const name = document.getElementById('cNameAr').value;
-        const course = document.getElementById('cCourse').value;
-        if(!name) return alert("يرجى إدخال الاسم");
-        const msg = `طلب شهادة تخرج:\nالاسم: ${name}\nالبرنامج: ${course}\n(مرفق صورة البطاقة من الجهتين)`;
-        window.open(`https://wa.me/249999240574?text=${encodeURIComponent(msg)}`);
-    }
-
-    function sendReg() {
-        const name = document.getElementById('rName').value;
-        const course = document.getElementById('rCourse').value;
-        const msg = `طلب تسجيل جديد أونلاين:\nالاسم: ${name}\nالبرنامج المراد: ${course}`;
-        window.open(`https://wa.me/249999240574?text=${encodeURIComponent(msg)}`);
     }
 </script>
 </body>
