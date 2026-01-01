@@ -2,65 +2,120 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>لوحة التحكم الإدارية | محمد طه</title>
+    <title>إدارة منصة البرامج التخصصية | محمد طه</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 30px; }
-        .admin-card { background: white; border-radius: 25px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); max-width: 900px; margin: auto; }
-        h2 { color: #1e293b; margin-top: 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; }
-        .form-row { display: flex; gap: 15px; margin: 25px 0; background: #f8fafc; padding: 20px; border-radius: 20px; }
-        input, select { flex: 1; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; }
-        .btn-add { background: #4e73df; color: white; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        th { text-align: right; color: #64748b; padding: 15px; border-bottom: 2px solid #f1f5f9; }
-        td { padding: 15px; border-bottom: 1px solid #f1f5f9; color: #334155; }
-        .key-badge { background: #fef3c7; color: #92400e; padding: 5px 12px; border-radius: 10px; font-weight: bold; font-family: monospace; }
-        .wa-btn { color: #16a34a; text-decoration: none; font-weight: bold; font-size: 13px; }
+        :root { --p: #2c3e50; --s: #27ae60; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; text-align: center; }
+        .admin-container { background: white; max-width: 700px; margin: auto; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header-admin { border-bottom: 2px solid #eee; margin-bottom: 20px; padding-bottom: 10px; }
+        input, select { width: 95%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .btn-add { background: var(--s); color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        .btn-add:hover { background: #219150; }
+        .user-list { margin-top: 30px; text-align: right; }
+        .user-item { background: #fff; border: 1px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .user-info b { color: var(--p); display: block; }
+        .user-info span { font-size: 12px; color: #7f8c8d; }
+        .btn-del { background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px; }
     </style>
 </head>
 <body>
 
-<div class="admin-card">
-    <h2>🛠️ لوحة تحكم الإدارة</h2>
-    <p style="color:#64748b">إدارة الأستاذ: محمد طه عطا المنان طه</p>
-
-    <div class="form-row">
-        <input type="text" id="stu-name" placeholder="اسم المتدرب">
-        <select id="stu-course">
-            <option>الماجستير المصغر في الترجمة واللغة الإنجليزية</option>
-            <option>التصميم الإنشائي</option>
-            <option>التمريض</option>
-        </select>
-        <button class="btn-add" onclick="approve()">تفعيل الآن</button>
+<div class="admin-container">
+    <div class="header-admin">
+        <h2>إدارة منصة البرامج التخصصية ☁️</h2>
+        <p>المسؤول: <b>محمد طه عطا المنان طه</b></p>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>المتدرب</th>
-                <th>البرنامج</th>
-                <th>الكود السري</th>
-                <th>تواصل</th>
-            </tr>
-        </thead>
-        <tbody id="admin-table"></tbody>
-    </table>
+    <div style="background: #f9f9f9; padding: 15px; border-radius: 10px;">
+        <h3>➕ تفعيل متدرب جديد</h3>
+        <input type="text" id="stdName" placeholder="اسم المتدرب الرباعي">
+        <input type="text" id="stdKey" placeholder="كود التفعيل (مثال: TAH-101)">
+        <input type="text" id="stdLink" placeholder="رابط المواد التعليمية (Google Drive / Telegram)">
+        <select id="stdType">
+            <option value="الماجستير المصغر (سنة)">الماجستير المصغر (سنة)</option>
+            <option value="كورس مخاطبة للمبتدئين">كورس مخاطبة للمبتدئين</option>
+            <option value="نادي مخاطبة">نادي مخاطبة</option>
+            <option value="الهندسة المدنية">الهندسة المدنية</option>
+        </select>
+        <button class="btn-add" onclick="addUser()">إضافة وتفعيل في السحابة</button>
+    </div>
+
+    <div class="user-list">
+        <h3>👥 المتدربون المسجلون حالياً:</h3>
+        <div id="displayUsers">جاري تحميل البيانات من Firebase...</div>
+    </div>
 </div>
 
 <script>
-    function approve() {
-        const name = document.getElementById('stu-name').value;
-        const course = document.getElementById('stu-course').value;
-        if(!name) return;
-        const key = "KEY-" + Math.floor(1000 + Math.random() * 9999);
-        const row = `<tr>
-            <td><b>${name}</b></td>
-            <td>${course}</td>
-            <td><span class="key-badge">${key}</span></td>
-            <td><a href="https://wa.me/?text=رمزك هو ${key}" class="wa-btn">واتساب 🟢</a></td>
-        </tr>`;
-        document.getElementById('admin-table').innerHTML += row;
-        document.getElementById('stu-name').value = "";
+    // الإعدادات المستخرجة من لقطات الشاشة الخاصة بك
+    const firebaseConfig = {
+        databaseURL: "https://taha-academy-97d5e-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // وظيفة إضافة مستخدم جديد
+    function addUser() {
+        const name = document.getElementById('stdName').value;
+        const key = document.getElementById('stdKey').value;
+        const link = document.getElementById('stdLink').value;
+        const type = document.getElementById('stdType').value;
+        const date = new Date().toLocaleDateString('ar-EG');
+
+        if(name && key) {
+            db.ref('users').push({
+                name: name,
+                key: key,
+                link: link,
+                type: type,
+                date: date
+            }).then(() => {
+                alert("تم التفعيل بنجاح! يمكن للطالب الآن الدخول بكوده.");
+                document.getElementById('stdName').value = "";
+                document.getElementById('stdKey').value = "";
+                document.getElementById('stdLink').value = "";
+            });
+        } else {
+            alert("يرجى إدخال الاسم والكود على الأقل.");
+        }
+    }
+
+    // عرض الطلاب وتحديث القائمة فورياً
+    db.ref('users').on('value', (snapshot) => {
+        const display = document.getElementById('displayUsers');
+        display.innerHTML = "";
+        
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                const user = childSnapshot.val();
+                const userId = childSnapshot.key;
+                
+                display.innerHTML += `
+                    <div class="user-item">
+                        <div class="user-info">
+                            <b>${user.name}</b>
+                            <span>الكود: ${user.key} | البرنامج: ${user.type}</span>
+                            <span>تاريخ التفعيل: ${user.date}</span>
+                        </div>
+                        <button class="btn-del" onclick="deleteUser('${userId}')">حذف</button>
+                    </div>
+                `;
+            });
+        } else {
+            display.innerHTML = "<p style='text-align:center; color:#999;'>لا يوجد طلاب مسجلون حالياً.</p>";
+        }
+    });
+
+    // وظيفة حذف مستخدم
+    function deleteUser(id) {
+        if(confirm("هل أنت متأكد من إلغاء تفعيل هذا المتدرب؟")) {
+            db.ref('users').child(id).remove();
+        }
     }
 </script>
+
 </body>
 </html>
+
