@@ -8,17 +8,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
         :root { --p: #1a73e8; --s: #34a853; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; text-align: center; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; text-align: center; color: #333; }
         .header { background: linear-gradient(135deg, var(--p), #2c3e50); color: white; padding: 25px; border-radius: 0 0 35px 35px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .card { background: white; margin: 20px auto; width: 90%; max-width: 480px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: none; }
         .active { display: block; animation: fadeInUp 0.5s ease; }
         input, select { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; }
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .nav { position: fixed; bottom: 10px; width: 96%; left: 2%; background: white; display: flex; padding: 12px 0; border-radius: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.15); z-index: 1000; }
         .nav-item { flex: 1; cursor: pointer; color: #777; font-size: 11px; }
         .nav-item.active-nav { color: var(--p); font-weight: bold; }
-        .quiz-opt { background: #f1f3f4; padding: 15px; margin: 8px 0; border-radius: 12px; cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
-        .quiz-opt:hover { border-color: var(--p); background: #e8f0fe; }
+        .profile-card { text-align: right; border-top: 5px solid var(--s); padding-top: 15px; }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -31,52 +31,44 @@
 
 <div id="about" class="card active">
     <h3>🔍 مَنْ نحن؟</h3>
-    <p style="line-height: 1.8; color: #444; text-align: justify;">
-        نحن وجهتكم الرائدة للتميز المهني. نوفر برامج تدريبية متطورة في <b>الهندسة، اللغات، وصيانة التقنيات الحديثة</b>. نهدف لتحويل الشغف إلى خبرة عملية تواكب متطلبات العصر بإشراف مباشر من خبراء متخصصين.
-    </p>
-    <button class="btn" style="background:var(--p)" onclick="tab('reg', document.querySelectorAll('.nav-item')[1])">اكتشف برامجنا</button>
+    <p style="line-height: 1.8; color: #555; text-align: justify;">نحن منصة متخصصة تهدف لتطوير المهارات في الهندسة واللغات وصيانة الدراجات الكهربائية بأحدث الأساليب التقنية.</p>
+    <button class="btn" style="background:var(--p)" onclick="tab('reg')">سجل الآن</button>
 </div>
 
 <div id="reg" class="card">
     <h3>📝 طلب التحاق</h3>
-    <input type="text" id="rName" placeholder="الاسم الرباعي للمتقدم">
+    <input type="text" id="rName" placeholder="الاسم الكامل">
     <select id="rProg">
         <option>الماجستير المصغر (سنة)</option>
         <option>إصلاح الدراجات الكهربائية</option>
         <option>كورس مخاطبة للمبتدئين</option>
-        <option>دورة الهندسة المدنية</option>
     </select>
-    <button class="btn" style="background:var(--s)" onclick="sendApply()">إرسال الطلب (واتساب)</button>
-</div>
-
-<div id="quiz" class="card">
-    <h3>🇬🇧 اختبار تحديد المستوى</h3>
-    <div id="q1">
-        <p><b>السؤال 1:</b> اختار الفعل الصحيح: "They ____ playing football now."</p>
-        <div class="quiz-opt" onclick="quizRes(true)">A) are</div>
-        <div class="quiz-opt" onclick="quizRes(false)">B) is</div>
-        <div class="quiz-opt" onclick="quizRes(false)">C) am</div>
-    </div>
+    <button class="btn" style="background:var(--s)" onclick="sendApply()">إرسال واتساب</button>
 </div>
 
 <div id="login" class="card">
-    <div id="loginBox">
+    <div id="loginForm">
         <h3>🔑 دخول المتدربين</h3>
         <input type="text" id="keyIn" placeholder="أدخل كود التفعيل">
-        <button class="btn" style="background:var(--p)" onclick="checkStudent()">عرض بيانات العضوية</button>
+        <button class="btn" style="background:var(--p)" onclick="login()">دخول</button>
     </div>
-    <div id="profileBox" style="display:none; text-align: right;">
-        <h4 style="text-align:center; color:var(--s);">عضوية نشطة ✅</h4>
-        <p>👤 الاسم: <b id="pName"></b></p>
-        <p>📚 البرنامج: <b id="pProg"></b></p>
-        <p>🔗 الرابط التعليمي: <a id="pLink" href="#" target="_blank" style="color:var(--p)">فتح الحقيبة</a></p>
+
+    <div id="profile" style="display:none;" class="profile-card">
+        <div id="notifBox" style="background:#fff3cd; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #ffeeba; display:none;">
+            <b style="color:#856404; font-size:13px;">🔔 إشعار الإدارة:</b>
+            <p id="pNoteText" style="margin:5px 0 0; font-size:14px; color:#555;"></p>
+        </div>
+        <div class="info-row"><span>الاسم:</span> <b id="pName"></b></div>
+        <div class="info-row"><span>البرنامج:</span> <b id="pProg"></b></div>
+        <div style="background:#e8f0fe; padding:15px; border-radius:12px; margin-top:15px; text-align:center;">
+            <a id="pLink" href="#" target="_blank" style="font-weight:bold; color:var(--p); text-decoration:none;">فتح المواد التعليمية</a>
+        </div>
     </div>
 </div>
 
 <div class="nav">
     <div class="nav-item active-nav" onclick="tab('about', this)">🏠<br>من نحن</div>
     <div class="nav-item" onclick="tab('reg', this)">📝<br>تسجيل</div>
-    <div class="nav-item" onclick="tab('quiz', this)">🇬🇧<br>اختبار</div>
     <div class="nav-item" onclick="tab('login', this)">🔑<br>دخول</div>
 </div>
 
@@ -89,31 +81,31 @@
         document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
         document.getElementById(id).classList.add('active');
-        el.classList.add('active-nav');
+        if(el) el.classList.add('active-nav');
+    }
+
+    function login() {
+        const key = document.getElementById('keyIn').value;
+        db.ref('users').orderByChild('key').equalTo(key).once('value', s => {
+            if(s.exists()) {
+                let u; s.forEach(c => { u = c.val(); });
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('profile').style.display = 'block';
+                document.getElementById('pName').innerText = u.name;
+                document.getElementById('pProg').innerText = u.type;
+                if(u.note && u.note !== "لا توجد إشعارات") {
+                    document.getElementById('notifBox').style.display = 'block';
+                    document.getElementById('pNoteText').innerText = u.note;
+                }
+                const link = document.getElementById('pLink');
+                if(u.link) { link.href = u.link; link.innerText = "فتح المواد التعليمية"; }
+            } else { alert("الكود غير صحيح"); }
+        });
     }
 
     function sendApply() {
         const msg = `أريد التسجيل في: ${document.getElementById('rProg').value}\nالاسم: ${document.getElementById('rName').value}`;
         window.open(`https://wa.me/249999240574?text=${encodeURIComponent(msg)}`);
-    }
-
-    function quizRes(isCorrect) {
-        alert(isCorrect ? "أحسنت! إجابة صحيحة 🎉" : "للأسف، إجابة خاطئة. حاول لاحقاً.");
-        tab('about', document.querySelectorAll('.nav-item')[0]);
-    }
-
-    function checkStudent() {
-        const key = document.getElementById('keyIn').value;
-        db.ref('users').orderByChild('key').equalTo(key).once('value', s => {
-            if(s.exists()) {
-                let u; s.forEach(c => { u = c.val(); });
-                document.getElementById('loginBox').style.display = 'none';
-                document.getElementById('profileBox').style.display = 'block';
-                document.getElementById('pName').innerText = u.name;
-                document.getElementById('pProg').innerText = u.type;
-                document.getElementById('pLink').href = u.link || "#";
-            } else { alert("الكود غير صحيح"); }
-        });
     }
 </script>
 </body>
