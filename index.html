@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة البرامج التخصصية</title>
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/LzbX7pG/education-logo.png">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root { --p: #1a2a6c; --s: #b21f1f; --a: #fdbb2d; }
+        body { font-family: 'Segoe UI', Tahoma; background: #f4f7fa; padding: 15px; direction: rtl; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-top: 6px solid var(--p); }
+        .header { text-align: center; margin-bottom: 20px; }
+        .logo-img { width: 80px; height: 80px; margin-bottom: 10px; border-radius: 50%; border: 2px solid var(--p); }
+        h3 { color: var(--p); margin: 0; font-size: 20px; }
+        .badge { background: #fff8e1; border: 1px solid var(--a); padding: 10px; border-radius: 8px; text-align: center; margin: 15px 0; display: none; }
+        .form-group { margin-bottom: 15px; text-align: right; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-send { width: 100%; padding: 15px; background: var(--p); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-send:hover { background: var(--s); }
+        
+        #pendingBox { display: none; text-align: center; }
+        .pdf-area { border: 1px solid #eee; padding: 20px; margin-bottom: 15px; text-align: right; background: #fff; line-height: 1.8; }
+        
+        .footer-small { margin-top: 30px; text-align: center; font-size: 11px; color: #666; border-top: 1px solid #eee; padding-top: 15px; }
+        .footer-small a { color: #25D366; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="formView">
+        <div class="header">
+            <img src="https://i.ibb.co/LzbX7pG/education-logo.png" alt="Logo" class="logo-img">
+            <h3>منصة البرامج التخصصية</h3>
+            <p style="font-size: 13px; font-weight: bold;">إدارة وإشراف: محمد طه عطا المنان</p>
+        </div>
+
+        <div id="idBadge" class="badge">
+            <small>رقم العضوية الأكاديمي المقترح:</small><br>
+            <strong id="stID" style="font-size: 22px; color: var(--s);">---</strong>
+        </div>
+
+        <form onsubmit="handleSubmission(event)">
+            <div class="form-group">
+                <label>الاسم الرباعي للمتدرب:</label>
+                <input type="text" id="name" placeholder="أدخل اسمك الكامل" oninput="generateID()" required>
+            </div>
+            <div class="form-group">
+                <label>إجمالي رسوم البرنامج:</label>
+                <input type="number" id="total" placeholder="0.00" required>
+            </div>
+            <div class="form-group">
+                <label>المبلغ المدفوع حالياً:</label>
+                <input type="number" id="paid" placeholder="0.00" required>
+            </div>
+            <div class="form-group">
+                <label>رقم عملية التحويل (المرجع):</label>
+                <input type="text" id="ref" placeholder="رقم الإيصال" required>
+            </div>
+            <button type="submit" class="btn-send">تأكيد البيانات وإرسال الطلب</button>
+        </form>
+    </div>
+
+    <div id="pendingBox">
+        <h2 style="color: var(--s);">⏳ الطلب معلق</h2>
+        <div id="pdfData" class="pdf-area">
+            <div style="text-align:center;"><img src="https://i.ibb.co/LzbX7pG/education-logo.png" width="50"></div>
+            <p><strong>تاريخ التسجيل:</strong> <span id="resDate"></span></p>
+            <p><strong>اسم المتدرب:</strong> <span id="resName"></span></p>
+            <p><strong>رقم العضوية:</strong> <span id="resID" style="color:var(--s); font-weight:bold;"></span></p>
+            <p><strong>رقم المرجع:</strong> <span id="resRef"></span></p>
+            <p><strong>المبلغ المدفوع:</strong> <span id="resPaid"></span></p>
+            <p style="text-align:center; font-size: 10px; color:#999; border-top:1px dashed #ccc; margin-top:10px; padding-top:5px;">إيصال معتمد - محمد طه عطا المنان</p>
+        </div>
+        <button onclick="downloadPDF()" style="background: #555; margin-bottom: 10px;" class="btn-send">⬇️ تحميل إيصال الطلب (PDF)</button>
+        <button onclick="sendToWhatsApp()" style="background: #25D366;" class="btn-send">✅ تأكيد عبر واتساب</button>
+    </div>
+
+    <div class="footer-small">
+        <span>📧 mohammedata009@gmail.com</span><br>
+        <a href="https://wa.me/249999920574">🟢 واتساب: 00249999920574</a> | 
+        <a href="https://wa.me/249901946410">🟢 واتساب: 00249901946410</a>
+        <p>© 2026 جميع الحقوق محفوظة</p>
+    </div>
+</div>
+
+<script>
+    // توليد رقم عضوية تلقائي عند كتابة الاسم
+    function generateID() {
+        const name = document.getElementById('name').value;
+        if(name.trim().split(" ").length >= 3 && document.getElementById('stID').innerText === "---") {
+            const id = "MEM-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('stID').innerText = id;
+            document.getElementById('idBadge').style.display = "block";
+        }
+    }
+
+    // معالجة الضغط على زر الإرسال
+    function handleSubmission(event) {
+        event.preventDefault();
+        const now = new Date().toLocaleString('ar-EG');
+        
+        document.getElementById('resName').innerText = document.getElementById('name').value;
+        document.getElementById('resID').innerText = document.getElementById('stID').innerText;
+        document.getElementById('resRef').innerText = document.getElementById('ref').value;
+        document.getElementById('resPaid').innerText = document.getElementById('paid').value + " ج.س";
+        document.getElementById('resDate').innerText = now;
+        
+        document.getElementById('formView').style.display = "none";
+        document.getElementById('pendingBox').style.display = "block";
+        window.scrollTo(0, 0);
+    }
+
+    // إرسال البيانات للواتساب
+    function sendToWhatsApp() {
+        const name = document.getElementById('resName').innerText;
+        const id = document.getElementById('resID').innerText;
+        const ref = document.getElementById('resRef').innerText;
+        const text = `طلب عضوية جديد (معلق):\nالاسم: ${name}\nرقم العضوية: ${id}\nرقم التحويل: ${ref}`;
+        window.open(`https://wa.me/249999920574?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    // تحميل ملف الـ PDF
+    function downloadPDF() {
+        const element = document.getElementById('pdfData');
+        const opt = {
+            margin: 10,
+            filename: 'إيصال_' + document.getElementById('resID').innerText + '.pdf',
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+</script>
+</body>
+</html>
