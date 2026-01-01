@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة التحكم الإدارية | محمد طه</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 30px; }
+        .admin-card { background: white; border-radius: 25px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); max-width: 900px; margin: auto; }
+        h2 { color: #1e293b; margin-top: 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; }
+        .form-row { display: flex; gap: 15px; margin: 25px 0; background: #f8fafc; padding: 20px; border-radius: 20px; }
+        input, select { flex: 1; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; }
+        .btn-add { background: #4e73df; color: white; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        th { text-align: right; color: #64748b; padding: 15px; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+        .key-badge { background: #fef3c7; color: #92400e; padding: 5px 12px; border-radius: 10px; font-weight: bold; font-family: monospace; }
+        .wa-btn { color: #16a34a; text-decoration: none; font-weight: bold; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div class="admin-card">
+    <h2>🛠️ لوحة تحكم الإدارة</h2>
+    <p style="color:#64748b">إدارة الأستاذ: محمد طه عطا المنان طه</p>
+
+    <div class="form-row">
+        <input type="text" id="stu-name" placeholder="اسم المتدرب">
+        <select id="stu-course">
+            <option>الماجستير المصغر في الترجمة واللغة الإنجليزية</option>
+            <option>التصميم الإنشائي</option>
+            <option>التمريض</option>
+        </select>
+        <button class="btn-add" onclick="approve()">تفعيل الآن</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>المتدرب</th>
+                <th>البرنامج</th>
+                <th>الكود السري</th>
+                <th>تواصل</th>
+            </tr>
+        </thead>
+        <tbody id="admin-table"></tbody>
+    </table>
+</div>
+
+<script>
+    function approve() {
+        const name = document.getElementById('stu-name').value;
+        const course = document.getElementById('stu-course').value;
+        if(!name) return;
+        const key = "KEY-" + Math.floor(1000 + Math.random() * 9999);
+        const row = `<tr>
+            <td><b>${name}</b></td>
+            <td>${course}</td>
+            <td><span class="key-badge">${key}</span></td>
+            <td><a href="https://wa.me/?text=رمزك هو ${key}" class="wa-btn">واتساب 🟢</a></td>
+        </tr>`;
+        document.getElementById('admin-table').innerHTML += row;
+        document.getElementById('stu-name').value = "";
+    }
+</script>
+</body>
+</html>
