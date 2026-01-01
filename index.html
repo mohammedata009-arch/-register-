@@ -3,96 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة البرامج التخصصية | إدارة محمد طه</title>
+    <title>منصة البرامج التخصصية | محمد طه</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
         :root { --p: #1a73e8; --s: #34a853; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; text-align: center; color: #333; }
-        .header { background: linear-gradient(135deg, var(--p), #2c3e50); color: white; padding: 25px; border-radius: 0 0 30px 30px; }
-        .card { background: white; margin: 15px auto; width: 92%; max-width: 450px; padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
-        #studentProfile { display: none; background: #fff; border-top: 5px solid var(--s); text-align: right; animation: fadeIn 0.5s; }
-        .profile-item { border-bottom: 1px solid #f0f0f0; padding: 12px 0; display: flex; justify-content: space-between; align-items: center; }
-        .profile-item b { color: var(--p); font-size: 14px; }
-        .link-box { background: #e8f0fe; padding: 15px; border-radius: 12px; margin-top: 15px; border: 1px dashed var(--p); text-align: center; }
-        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; }
-        .nav { position: fixed; bottom: 10px; width: 96%; left: 2%; background: white; display: flex; padding: 10px 0; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .nav-item { flex: 1; cursor: pointer; color: #888; font-size: 10px; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; text-align: center; }
+        .header { background: linear-gradient(135deg, var(--p), #2c3e50); color: white; padding: 30px 20px; border-radius: 0 0 35px 35px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .card { background: white; margin: 20px auto; width: 90%; max-width: 480px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: none; }
+        .active { display: block; animation: fadeInUp 0.5s ease; }
+        input, select { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .nav { position: fixed; bottom: 10px; width: 96%; left: 2%; background: white; display: flex; padding: 12px 0; border-radius: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.15); z-index: 1000; }
+        .nav-item { flex: 1; cursor: pointer; color: #777; font-size: 11px; font-weight: bold; }
+        .nav-item.active-nav { color: var(--p); transform: scale(1.1); }
+        .profile-card { text-align: right; border-top: 5px solid var(--s); padding-top: 15px; }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .quiz-opt { background: #f1f3f4; padding: 15px; margin: 8px 0; border-radius: 12px; cursor: pointer; border: 2px solid transparent; }
+        .quiz-opt:hover { border-color: var(--p); background: #e8f0fe; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="header">
     <h2 style="margin: 0;">منصة البرامج التخصصية</h2>
-    <p style="font-size: 12px; margin: 5px 0;">إدارة: محمد طه عطا المنان طه</p>
+    <p style="font-size: 13px; opacity: 0.9; margin-top: 8px;">بإشراف: محمد طه عطا المنان طه</p>
 </div>
 
-<div id="wLogin" class="card">
-    <div id="loginArea">
-        <h3>🔑 تسجيل دخول المتدرب</h3>
-        <input type="text" id="keyIn" placeholder="أدخل كود التفعيل الخاص بك">
-        <button class="btn" style="background:var(--p)" onclick="checkKey()">تفعيل العضوية</button>
+<div id="about" class="card active">
+    <h3>🔍 من نحن؟</h3>
+    <p style="line-height: 1.7; color: #555; text-align: justify;">
+        نحن منصة تعليمية رائدة تهدف إلى تمكين الطلاب والمهنيين في مجالات <b>العلوم واللغات</b>. 
+        نقدم برامج تدريبية متكاملة بشهادات معتمدة، مع التركيز على المهارات المطلوبة فعلياً في <b>سوق العمل</b>، 
+        مثل الهندسة، اللغات، وصيانة الدراجات الكهربائية.
+    </p>
+    <button class="btn" style="background:var(--p)" onclick="tab('reg')">سجل معنا الآن</button>
+</div>
+
+<div id="reg" class="card">
+    <h3>📝 طلب التحاق ببرنامج</h3>
+    <input type="text" id="rName" placeholder="الاسم الرباعي">
+    <select id="rProg">
+        <option>الماجستير المصغر (سنة)</option>
+        <option>إصلاح الدراجات الكهربائية</option>
+        <option>كورس مخاطبة للمبتدئين</option>
+        <option>الهندسة المدنية</option>
+    </select>
+    <button class="btn" style="background:var(--s)" onclick="sendToWA()">إرسال الطلب عبر واتساب</button>
+</div>
+
+<div id="quiz" class="card">
+    <h3>🇬🇧 English Placement Quiz</h3>
+    <div id="qBox">
+        <p style="font-weight:bold;">1. Which sentence is correct?</p>
+        <div class="quiz-opt" onclick="nextQ('is')">A) She is studying English now.</div>
+        <div class="quiz-opt" onclick="nextQ('are')">B) She are studying English now.</div>
+    </div>
+</div>
+
+<div id="login" class="card">
+    <div id="loginForm">
+        <h3>🔑 منطقة المتدربين</h3>
+        <input type="text" id="keyIn" placeholder="أدخل كود التفعيل">
+        <button class="btn" style="background:var(--p)" onclick="login()">دخول للملف الشخصي</button>
     </div>
 
-    <div id="studentProfile">
-        <h4 style="text-align:center; color:var(--s); margin-top:0;">✅ بيانات العضوية النشطة</h4>
-        <div class="profile-item"><span>اسم المتدرب:</span> <b id="pName"></b></div>
-        <div class="profile-item"><span>رقم التفعيل:</span> <b id="pKey"></b></div>
-        <div class="profile-item"><span>البرنامج الدراسي:</span> <b id="pProg"></b></div>
-        <div class="profile-item"><span>مدة البرنامج:</span> <b id="pDur"></b></div>
-        <div class="profile-item"><span>تاريخ الاشتراك:</span> <b id="pDate"></b></div>
-        
-        <div class="link-box">
-            <p style="margin:0 0 10px; font-size:13px; color:#555;">🔗 رابط المحتوى التعليمي الخاص بك:</p>
-            <a id="pLink" href="#" target="_blank" style="color: var(--p); font-weight: bold; text-decoration: none; word-break: break-all;">جاري جلب الرابط...</a>
+    <div id="profile" style="display:none;" class="profile-card">
+        <h4 style="text-align:center; color:var(--s);">✅ تم التفعيل بنجاح</h4>
+        <div class="info-row"><span>الاسم:</span> <b id="pName"></b></div>
+        <div class="info-row"><span>الكود:</span> <b id="pKey"></b></div>
+        <div class="info-row"><span>البرنامج:</span> <b id="pProg"></b></div>
+        <div class="info-row"><span>المدة:</span> <b id="pDur"></b></div>
+        <div class="info-row"><span>التاريخ:</span> <b id="pDate"></b></div>
+        <div style="background:#e8f0fe; padding:15px; border-radius:12px; margin-top:15px; text-align:center;">
+            <p style="font-size:12px; margin-bottom:5px;">🔗 رابط الحقيبة التدريبية:</p>
+            <a id="pLink" href="#" target="_blank" style="font-weight:bold; color:var(--p); text-decoration:none;">اضغط هنا لفتح الرابط</a>
         </div>
-        
-        <button class="btn" style="background:var(--s); margin-top:15px;" onclick="location.reload()">تسجيل خروج</button>
     </div>
+</div>
+
+<div class="nav">
+    <div class="nav-item active-nav" onclick="tab('about', this)">🔍<br>من نحن</div>
+    <div class="nav-item" onclick="tab('reg', this)">📝<br>التسجيل</div>
+    <div class="nav-item" onclick="tab('quiz', this)">🇬🇧<br>اختبار</div>
+    <div class="nav-item" onclick="tab('login', this)">🔑<br>دخول</div>
 </div>
 
 <script>
-    // إعدادات Firebase من مشروعك الحالي
     const firebaseConfig = { databaseURL: "https://taha-academy-97d5e-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function checkKey() {
-        const key = document.getElementById('keyIn').value;
-        if(!key) return alert("يرجى إدخال الكود");
+    function tab(id, el) {
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
+        document.getElementById(id).classList.add('active');
+        if(el) el.classList.add('active-nav');
+    }
 
-        // البحث في السحابة دون مسح أي بيانات قديمة
+    function sendToWA() {
+        const msg = `أريد الالتحاق ببرنامج: ${document.getElementById('rProg').value}\nالاسم: ${document.getElementById('rName').value}`;
+        window.open(`https://wa.me/249999240574?text=${encodeURIComponent(msg)}`);
+    }
+
+    function nextQ(ans) {
+        if(ans === 'is') alert("Excellent! Correct answer. 🎉");
+        else alert("Oops! Try again next time.");
+        tab('reg');
+    }
+
+    function login() {
+        const key = document.getElementById('keyIn').value;
         db.ref('users').orderByChild('key').equalTo(key).once('value', s => {
             if(s.exists()) {
                 let u; s.forEach(c => { u = c.val(); });
-                
-                // إظهار واجهة العضوية وإخفاء منطقة الدخول
-                document.getElementById('loginArea').style.display = 'none';
-                document.getElementById('studentProfile').style.display = 'block';
-                
-                // تعبئة المعلومات التفاعلية
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('profile').style.display = 'block';
                 document.getElementById('pName').innerText = u.name;
                 document.getElementById('pKey').innerText = u.key;
                 document.getElementById('pProg').innerText = u.type;
-                document.getElementById('pDate').innerText = u.date || "غير محدد";
-                
-                // تحديد المدة تلقائياً بناءً على طلبك
-                document.getElementById('pDur').innerText = (u.type.includes("ماجستير")) ? "سنة واحدة" : "شهر واحد";
-                
-                // عرض الرابط المرسل من الإدارة داخل الصفحة
-                const linkElem = document.getElementById('pLink');
-                if(u.link) {
-                    linkElem.href = u.link;
-                    linkElem.innerText = "اضغط هنا لفتح الحقيبة التدريبية";
-                } else {
-                    linkElem.innerText = "لم يتم إدراج رابط بعد، تواصل مع الإدارة";
-                    linkElem.style.color = "red";
-                }
-            } else { 
-                alert("❌ الكود غير موجود. تأكد من الكود أو تواصل مع الإدارة لتفعيل عضويتك."); 
-            }
+                document.getElementById('pDate').innerText = u.date || "نشط";
+                document.getElementById('pDur').innerText = u.type.includes("ماجستير") ? "سنة" : "شهر";
+                const a = document.getElementById('pLink');
+                if(u.link) { a.href = u.link; a.innerText = "فتح المواد التعليمية"; }
+                else a.innerText = "الرابط قيد التجهيز";
+            } else { alert("الكود غير موجود في السحابة"); }
         });
     }
 </script>
